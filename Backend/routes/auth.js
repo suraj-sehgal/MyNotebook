@@ -15,11 +15,12 @@ router.post('/createuser',[
     body('name').isLength({min:3}),
     body('password','password must be atleast 5 characters').isLength({min:5}),
 ] , async (req,res)=>{
+    let success=false;
 
     //if there are errors, returns bad request and the errors
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        return res.status(400).json({errors : errors.array()});
+        return res.status(400).json({success,errors : errors.array()});
     }
 
     try {
@@ -27,7 +28,7 @@ router.post('/createuser',[
     //Check whether the user with this email exists already
     let user =await User.findOne({email : req.body.email});
     if(user){
-        return res.status(400).json({errors : "Sorry, User with this email is already exists"});
+        return res.status(400).json({success,errors : "Sorry, User with this email is already exists"});
     }
     //password encryption
     const salt =await bcrypt.genSalt(10);
@@ -46,7 +47,8 @@ router.post('/createuser',[
         }
     }
     const authToken = jwt.sign(data,jwt_secret);
-    res.json({authToken});
+    success=true;
+    res.json({success,authToken});
 
 } catch (error) {
     console.error(error.message);
@@ -59,7 +61,7 @@ router.post('/login',[
     body('email').isEmail(),
     body('password',"Password cannot be blank").exists(),
 ] , async (req,res)=>{
-
+    let success=false;
     //if there are errors, returns bad request and the errors
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -71,12 +73,12 @@ router.post('/login',[
     try {
         const user = await User.findOne({email});
         if(!user){
-            return res.status(404).json({error :"Please login with correct credentials"});
+            return res.status(404).json({success,error :"Please login with correct credentials"});
         }
 
         const passwordCompare =await bcrypt.compare(password,user.password);
         if(!passwordCompare){
-            return res.status(404).json({error :"Please login with correct credentials"});
+            return res.status(404).json({success,error :"Please login with correct credentials"});
         }
         // Token Generation
         const data ={
@@ -85,7 +87,8 @@ router.post('/login',[
             }
         }
         const authToken = jwt.sign(data,jwt_secret);
-        res.json({authToken});
+        success=true;
+        res.json({success,authToken});
 
     } catch (error) {
         console.error(error.message);
