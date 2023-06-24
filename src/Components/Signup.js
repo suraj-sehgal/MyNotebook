@@ -9,27 +9,34 @@ const Signup = (props) => {
 
     const handelSubmit =async (e)=>{
         e.preventDefault();
-        const {name,email,password}=credential;
+        const {name,email,password,cpassword}=credential;
             //API call
-        const response = await fetch(`${host}/api/auth/createuser`, {
-            method: "POST", 
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({name,email,password})
-
-        });
-        const json = await response.json();
-        console.log(json);
-        if(json.success){
-            // Save the auth token and redirect
-            localStorage.setItem('token',json.authToken);
-            props.showAlert("Account has created","success")
-            navigate("/",{replace:true});
+        if(password===cpassword){
+            const response = await fetch(`${host}/api/auth/createuser`, {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({name,email,password})
+    
+            });
+            const json = await response.json();
+            console.log(json);
+            if(json.success){
+                // Save the auth token and redirect
+                localStorage.setItem('token',json.authToken);
+                localStorage.setItem('userName',json.userName);
+                props.showAlert("Account has created","success")
+                navigate("/",{replace:true});
+            }
+            else{
+                props.showAlert("Invalid Credential","danger")
+            }
         }
         else{
-            props.showAlert("Invalid Credential","danger")
+            props.showAlert("password do not match","danger")
         }
+        
     }
 
     const onChange= (e)=>{
@@ -37,7 +44,8 @@ const Signup = (props) => {
     }
     return (
         <div>
-            <form onSubmit={handelSubmit}>
+            <h4 className='my-4'>Create a new account</h4>
+            <form onSubmit={handelSubmit} className='container'>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name*</label>
                     <input type="text" className="form-control" id="name" onChange={onChange} required name='name'/>

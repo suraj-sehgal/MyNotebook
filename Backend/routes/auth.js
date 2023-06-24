@@ -38,6 +38,7 @@ router.post('/createuser',[
         name:req.body.name,
         password: secPass,
         email : req.body.email,
+        cpassword:req.body.password,
     });
 
     // Token Generation
@@ -48,7 +49,8 @@ router.post('/createuser',[
     }
     const authToken = jwt.sign(data,jwt_secret);
     success=true;
-    res.json({success,authToken});
+    let userName= user.name;
+    res.json({success,userName,authToken});
 
 } catch (error) {
     console.error(error.message);
@@ -88,7 +90,8 @@ router.post('/login',[
         }
         const authToken = jwt.sign(data,jwt_secret);
         success=true;
-        res.json({success,authToken});
+        let userName= user.name;
+        res.json({success,userName,authToken});
 
     } catch (error) {
         console.error(error.message);

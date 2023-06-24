@@ -26,6 +26,7 @@ const Login = (props) => {
         if(json.success===true){
             // Save the auth token and redirect 
             localStorage.setItem("token",json.authToken);
+            localStorage.setItem('userName',json.userName);
             props.showAlert("You are Loggedin","Success");
             navigate("/",{replace:true});
         }
@@ -43,6 +44,7 @@ const Login = (props) => {
 
     return (
         <div className='container'>
+            <h4 className='my-4'>Login your account</h4>
             <form onSubmit={handelSubmit}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
